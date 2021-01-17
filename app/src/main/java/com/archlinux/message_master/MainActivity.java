@@ -82,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("numberwithoutHyphen", numberWithoutHyphen);
                 if(smsSender.equals(numberWithoutHyphen)){
                     //production
-                    String Body = smsBody.substring(11);
-                    String clientNumber = smsBody.substring(0,4)+"-"+smsBody.substring(4,7)+"-"+smsBody.substring(7,10);
+                    String clientNumber = smsBody.substring(0,12);
+                    String Body = smsBody.substring(12);
                     sendSMS(clientNumber, Body);
 
                     //test
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else{
                     if(isNumber){
-                        smsBody = smsSender +"@"+ smsBody+"NOOO";
+                        smsBody = smsSender +"@"+ smsBody;
                         sendSMS(MainActivity.this.show_master_number, smsBody);
                         Toast noticeToast = Toast.makeText(context, getString(R.string.notify_received), Toast.LENGTH_SHORT);
                     }
