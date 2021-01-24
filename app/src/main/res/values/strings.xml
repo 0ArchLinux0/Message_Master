@@ -3,8 +3,10 @@
     <string name="button_name2">등록/변경</string>
     <string name="description">이 기기로 발송된 문자는 모두 관리자 기기로 전송됩니다</string>
     <string name="pref_key">Message_Master</string>
-    <string name="key_master_number">key_master_number</string>
-    <string name="no_registered_number">"관리자 기기의 전화번호를 등록해주세요(-없이)"</string>
+    <string name="key_master_number1">key_master_number1</string>
+    <string name="key_master_number2">key_master_number2</string>
+    <string name="no_registered_number1">"관리자 기기1 의 전화번호를 등록해주세요(-없이)"</string>
+    <string name="no_registered_number2">"관리자 기기2 의 전화번호를 등록해주세요(-없이)"</string>
     <string name="notify_received">문자 수신, 관리자 기기로 전송합니다</string>
 
 </resources>

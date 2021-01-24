@@ -25,13 +25,16 @@ public class MainActivity extends AppCompatActivity {
     private Button b1;
     private Button b2;
     private TextView tv;
+    private TextView tv2;
     private EditText et1;
+    private EditText et2;
     private Context context;
     private boolean isNumber = false;
 
     private SmsBroadcastReceiver smsBroadcastReceiver;
     static SmsManager smsManager = SmsManager.getDefault();
     private String show_master_number;
+    private String show_master_number2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,17 +47,16 @@ public class MainActivity extends AppCompatActivity {
 
         b2 = (Button) findViewById(R.id.button2);
         et1 = (EditText) findViewById(R.id.editText1);
+        et2 = (EditText) findViewById(R.id.editText2);
         tv = (TextView) findViewById(R.id.tv);
+        tv2 = (TextView) findViewById(R.id.tv2);
 
-        show_master_number = sharedPref.getString(getString(R.string.key_master_number), getString(R.string.no_registered_number));
-        if(show_master_number.equals(getString(R.string.no_registered_number))){
-            tv.setText(show_master_number);
-            isNumber = false;
-        }
-        else {
-            tv.setText(show_master_number);
-            isNumber = true;
-        }
+        show_master_number = sharedPref.getString(getString(R.string.key_master_number1), getString(R.string.no_registered_number1));
+        show_master_number2 = sharedPref.getString(getString(R.string.key_master_number2), getString(R.string.no_registered_number2));
+
+
+        tv.setText(show_master_number);
+        tv2.setText(show_master_number);
         //Get persmission at runtime
        /* String[] PERMISSIONS={
                 Manifest.permission.READ_SMS,
@@ -74,18 +76,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTextReceived(String smsSender, String smsBody){ //smsSender has no hyphen
                 //production
-                String numberWithoutHyphen = show_master_number.substring(0,4)+show_master_number.substring(5,8)+show_master_number.substring(9,12);
-
+                //String numberWithoutHyphen = show_master_number.substring(0,4)+show_master_number.substring(5,8)+show_master_number.substring(9,12);
+                //String numberWithoutCountryCode = "" + show_master_number.substring(1);
                 //test
                 //String numberWithoutHyphen = show_master_number.substring(0,3)+show_master_number.substring(4,8)+show_master_number.substring(9,13);
-                Log.d("smsSender number", smsSender);
-                Log.d("numberwithoutHyphen", numberWithoutHyphen);
-                if(smsSender.equals(numberWithoutHyphen)){
-                    //production
-                    String clientNumber = smsBody.substring(0,12);
-                    String Body = smsBody.substring(12);
-                    sendSMS(clientNumber, Body);
+                //Log.d("smsSender number", smsSender);
+                //Log.d("numberwithoutHyphen", numberWithoutHyphen);
+                String numberWithoutCountryCode = show_master_number.substring(3);
+                String numberWithout = smsSender.substring(1);
+                //tv.setText(smsSender);
+                Toast.makeText(context, "const:"+smsSender+",sender:"+show_master_number+",eval:"+smsSender.equals(show_master_number), Toast.LENGTH_LONG).show();
 
+                if((smsSender.equals(show_master_number) || smsSender.equals(show_master_number2))){
+                    //production
+                    String clientNumber = smsBody.substring(0,smsBody.indexOf("@"));
+                    String bodyText = smsBody.substring(smsBody.indexOf("@") + 1);
+                    String toast = "From master to client: " + clientNumber;
+                    Toast.makeText(context, toast, Toast.LENGTH_LONG).show();
+                    //String clientNumber = smsBody.substring(0,4)+"-"+smsBody.substring(4,7)+"-"+smsBody.substring(7,10);
+                    sendSMS(clientNumber, bodyText);
                     //test
                     /*String Body = smsBody.substring(12);
                     Body += "success!";
@@ -93,12 +102,10 @@ public class MainActivity extends AppCompatActivity {
                     sendSMS(clientNumber, Body);*/
                 }
                 else{
-                    if(isNumber){
-                        smsBody = smsSender +"@"+ smsBody;
-                        sendSMS(MainActivity.this.show_master_number, smsBody);
-                        Toast noticeToast = Toast.makeText(context, getString(R.string.notify_received), Toast.LENGTH_SHORT);
-                    }
-                    Log.d("smsSender" , smsSender);
+                    //Toast.makeText(context, "From " + smsSender, Toast.LENGTH_LONG).show();
+                    smsBody = smsSender +"@"+ smsBody;
+                    sendSMS(show_master_number, smsBody);
+                    //Toast noticeToast = Toast.makeText(context, getString(R.string.notify_received), Toast.LENGTH_SHORT)
                 }
             }
         });
@@ -133,19 +140,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String raw_masterNumber = et1.getText().toString();
-                if(raw_masterNumber.length()<10){
-                    et1.setText("");
-                    return;
-                }
+                String raw_masterNumber2 = et2.getText().toString();
                 //production
-                String numberWithHyphen =  raw_masterNumber.substring(0,4)+"-"+raw_masterNumber.substring(4,7)+"-"+raw_masterNumber.substring(7,10);
-
+                //String numberWithHyphen =  raw_masterNumber.substring(0,4)+"-"+raw_masterNumber.substring(4,7)+"-"+raw_masterNumber.substring(7,10);
+                String numberWithCountryCode = "+" + raw_masterNumber;
+                String numberWithCountryCode2 = "+" + raw_masterNumber2;
                 //test
                 //String numberWithHyphen =  raw_masterNumber.substring(0,3)+"-"+raw_masterNumber.substring(3,7)+"-"+raw_masterNumber.substring(7,11);
-
-                prefEditor.putString(getString(R.string.key_master_number), numberWithHyphen);
-                tv.setText(numberWithHyphen);
+                show_master_number = numberWithCountryCode;
+                show_master_number2 = numberWithCountryCode2;
+                if(show_master_number!="" || show_master_number == null){
+                    prefEditor.putString(getString(R.string.key_master_number1), numberWithCountryCode);
+                    tv.setText(numberWithCountryCode);
+                }
+                if(show_master_number2!="" || show_master_number2 == null){
+                    prefEditor.putString(getString(R.string.key_master_number2), numberWithCountryCode2);
+                    tv2.setText(numberWithCountryCode2);
+                }
                 prefEditor.apply();
+                et1.setText("");
+                et2.setText("");
             }
         });
 
@@ -154,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void sendSMS(String number, String text) {
         smsManager.sendTextMessage(number, null, text, null, null);
-        Log.d("UMM.....", "Trying to send sms");
         //smsManager.sendTextMessage("070-3966-9382", null, "testing", null, null);
     }
 
